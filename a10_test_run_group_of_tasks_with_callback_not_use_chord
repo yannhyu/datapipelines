@@ -1,0 +1,15 @@
+%timeit sort_results(group(header)().get())
+
+In [33]: %timeit sort_results(group(header)().get())
+The slowest run took 45.00 times longer than the fastest. This could mean that an intermediate result is being cached.
+1 loop, best of 3: 611 ms per loop
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[2017-01-23 17:30:15,647: INFO/MainProcess] Received task: tasks.price_range[c56fe0e1-b351-4689-9270-aaf1eb049519]  
+[2017-01-23 17:30:15,648: INFO/MainProcess] Received task: tasks.price_range[21dcb8ea-ab59-45ec-8ead-cadbfbc02363]  
+[2017-01-23 17:30:15,649: INFO/MainProcess] Received task: tasks.price_range[650322d5-6861-489d-b19e-3c8e2e86a9e6]  
+[2017-01-23 17:30:15,932: INFO/PoolWorker-1] Task tasks.price_range[c56fe0e1-b351-4689-9270-aaf1eb049519] succeeded in 0.2814561870000034s: {'period_mean': 801.898080615, 'period_low': 786.140015, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}
+[2017-01-23 17:30:16,143: INFO/PoolWorker-1] Task tasks.price_range[650322d5-6861-489d-b19e-3c8e2e86a9e6] succeeded in 0.21034946799773024s: {'period_mean': 62.6038460769, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}
+
+[2017-01-23 17:30:43,141: INFO/PoolWorker-2] Task tasks.price_range[21dcb8ea-ab59-45ec-8ead-cadbfbc02363] succeeded in 27.491608321997774s: {'period_mean': 124.639231154, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.65, 'result': 'higher', 'period_high': 128.339996, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.19}

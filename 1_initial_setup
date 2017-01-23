@@ -1,0 +1,46 @@
+source ~/.profile
+
+mkvirtualenv --python=/usr/bin/python3 data_pipelines
+
+mkvirtualenv py2data_pipelines
+
+workon
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:data_pipelines$ which python3
+/home/yann.yu/.virtualenvs/data_pipelines/bin/python3
+(data_pipelines) yann.yu@mllxv-yu:data_pipelines$ 
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+pip install celery[rabbitmq]
+pip install pandas
+
+pip install pandas_datareader
+
+pip install jupyter
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+rabbitmqctl add_user celery_user b3stp@ssev@
+
+yann.yu@mllxv-yu:data_pipelines$ sudo rabbitmqctl add_user celery_user b3stp@ssev@
+[sudo] password for yann.yu: 
+Creating user "celery_user" ...
+yann.yu@mllxv-yu:data_pipelines$ 
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+rabbitmqctl add_vhost celery_vhost
+rabbitmqctl set_permissions -p celery_vhost celery_user ".*" ".*" ".*"
+
+yann.yu@mllxv-yu:data_pipelines$ sudo rabbitmqctl add_vhost celery_vhost
+Creating vhost "celery_vhost" ...
+yann.yu@mllxv-yu:data_pipelines$ sudo rabbitmqctl set_permissions -p celery_vhost celery_user ".*" ".*" ".*"
+Setting permissions for user "celery_user" in vhost "celery_vhost" ...
+yann.yu@mllxv-yu:data_pipelines$ 
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+

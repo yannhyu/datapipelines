@@ -1,0 +1,115 @@
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ ls
+celeryapp.py  __pycache__  tasks.py
+(data_pipelines) yann.yu@mllxv-yu:celery_app$
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+celery -A tasks worker --loglevel=INFO
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 12:28:54
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f0fe935d128
+- ** ---------- .> transport:   amqp://celery_user:**@localhost:5672/celery_vhost
+- ** ---------- .> results:     rpc://
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.get_stock_info
+
+[2017-01-23 12:28:54,387: INFO/MainProcess] Connected to amqp://celery_user:**@127.0.0.1:5672/celery_vhost
+[2017-01-23 12:28:54,427: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 12:28:55,449: INFO/MainProcess] mingle: all alone
+[2017-01-23 12:28:55,482: INFO/MainProcess] celery@mllxv-yu ready.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+to test this new task in celery, we run it with delay inside ipython:
+
+yann.yu@mllxv-yu:celery_app$ workon data_pipelines
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ ipython
+Python 3.5.2 (default, Nov 17 2016, 17:05:23) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.1.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: from datetime import datetime
+
+In [2]: from tasks import get_stock_info
+
+In [3]: res = get_stock_info.delay('FB', datetime(2017, 1, 1), datetime.today())
+
+In [4]: res
+Out[4]: <AsyncResult: 59d27056-e438-4a60-b1f1-cf94e8a9376e>
+
+In [5]: 
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+checking celery server log:
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 12:28:54
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f0fe935d128
+- ** ---------- .> transport:   amqp://celery_user:**@localhost:5672/celery_vhost
+- ** ---------- .> results:     rpc://
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.get_stock_info
+
+[2017-01-23 12:28:54,387: INFO/MainProcess] Connected to amqp://celery_user:**@127.0.0.1:5672/celery_vhost
+[2017-01-23 12:28:54,427: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 12:28:55,449: INFO/MainProcess] mingle: all alone
+[2017-01-23 12:28:55,482: INFO/MainProcess] celery@mllxv-yu ready.
+[2017-01-23 12:56:06,698: INFO/MainProcess] Received task: tasks.get_stock_info[59d27056-e438-4a60-b1f1-cf94e8a9376e]  
+[2017-01-23 12:56:07,177: INFO/PoolWorker-1] Task tasks.get_stock_info[59d27056-e438-4a60-b1f1-cf94e8a9376e] succeeded in 0.18080147100044996s: '{"Low min":{"FB":115.510002},"Low max":{"FB":127.449997},"Low mean":{"FB":123.3207692308},"Low median":{"FB":124.279999},"Close min":{"FB":116.860001},"Close max":{"FB":128.339996},"Close mean":{"FB":124.6392311538},"Close median":{"FB":126.089996},"High min":{"FB":117.839996},"High max":{"FB":129.270004},"High mean":{"FB":125.3061534615},"High median":{"FB":126.120003},"Adj Close min":{"FB":116.860001},"Adj Close max":{"FB":128.339996},"Adj Close mean":{"FB":124.6392311538},"Adj Close median":{"FB":126.089996},"Open min":{"FB":116.029999},"Open max":{"FB":128.410004},"Open mean":{"FB":124.0015388462},"Open median":{"FB":124.82}}'
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In [6]: res.status
+Out[6]: 'SUCCESS'
+
+In [7]: res.info
+Out[7]: '{"Low min":{"FB":115.510002},"Low max":{"FB":127.449997},"Low mean":{"FB":123.3207692308},"Low median":{"FB":124.279999},"Close min":{"FB":116.860001},"Close max":{"FB":128.339996},"Close mean":{"FB":124.6392311538},"Close median":{"FB":126.089996},"High min":{"FB":117.839996},"High max":{"FB":129.270004},"High mean":{"FB":125.3061534615},"High median":{"FB":126.120003},"Adj Close min":{"FB":116.860001},"Adj Close max":{"FB":128.339996},"Adj Close mean":{"FB":124.6392311538},"Adj Close median":{"FB":126.089996},"Open min":{"FB":116.029999},"Open max":{"FB":128.410004},"Open mean":{"FB":124.0015388462},"Open median":{"FB":124.82}}'
+
+In [8]: res.get()
+Out[8]: '{"Low min":{"FB":115.510002},"Low max":{"FB":127.449997},"Low mean":{"FB":123.3207692308},"Low median":{"FB":124.279999},"Close min":{"FB":116.860001},"Close max":{"FB":128.339996},"Close mean":{"FB":124.6392311538},"Close median":{"FB":126.089996},"High min":{"FB":117.839996},"High max":{"FB":129.270004},"High mean":{"FB":125.3061534615},"High median":{"FB":126.120003},"Adj Close min":{"FB":116.860001},"Adj Close max":{"FB":128.339996},"Adj Close mean":{"FB":124.6392311538},"Adj Close median":{"FB":126.089996},"Open min":{"FB":116.029999},"Open max":{"FB":128.410004},"Open mean":{"FB":124.0015388462},"Open median":{"FB":124.82}}'
+
+In [9]: res.failed()
+Out[9]: False
+
+In [10]: 
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Ctl + c 
+to terminate celery command
+
+
+

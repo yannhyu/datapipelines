@@ -1,0 +1,49 @@
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ ipython
+Python 3.5.2 (default, Nov 17 2016, 17:05:23) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.1.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]:
+
+In [2]: from tasks import get_stock_info
+
+In [3]: from datetime import datetime
+
+In [4]: res = get_stock_info('FB', datetime(2017, 1, 1), datetime.today())
+
+In [5]: res
+Out[5]: '{"Open min":{"FB":116.029999},"Open max":{"FB":128.410004},"Open mean":{"FB":124.0015388462},"Open median":{"FB":124.82},"Low min":{"FB":115.510002},"Low max":{"FB":127.449997},"Low mean":{"FB":123.3207692308},"Low median":{"FB":124.279999},"Adj Close min":{"FB":116.860001},"Adj Close max":{"FB":128.339996},"Adj Close mean":{"FB":124.6392311538},"Adj Close median":{"FB":126.089996},"High min":{"FB":117.839996},"High max":{"FB":129.270004},"High mean":{"FB":125.3061534615},"High median":{"FB":126.120003},"Close min":{"FB":116.860001},"Close max":{"FB":128.339996},"Close mean":{"FB":124.6392311538},"Close median":{"FB":126.089996}}'
+
+In [6]:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ ipython
+Python 3.5.2 (default, Nov 17 2016, 17:05:23) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.1.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: from tasks import current_earnings
+
+In [2]: res = current_earnings('GOOG')
+
+In [3]: res
+Out[3]: '{"Stock":{"0":"GOOG"},"Current Year ESP":{"0":34.45}}'
+
+In [4]: res = current_earnings('IBM')
+
+In [5]: res
+Out[5]: '{"Stock":{"0":"IBM"},"Current Year ESP":{"0":13.82}}'
+
+In [6]: 
+

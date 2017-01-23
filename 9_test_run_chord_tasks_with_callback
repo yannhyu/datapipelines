@@ -1,0 +1,79 @@
+In [12]: my_stocks = ['GOOG', 'FB', 'MSFT']
+
+In [13]: header = [ price_range.subtask((stk, start, end))  for stk in my_stocks ]
+
+In [14]: callback = sort_results.subtask()
+
+In [15]: import timeit
+
+In [32]: %timeit chord(header)(callback).get()
+The slowest run took 40.88 times longer than the fastest. This could mean that an intermediate result is being cached.
+1 loop, best of 3: 518 ms per loop
+
+In [33]:
+---------------------------------------------------------------------------
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 16:51:57
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f30ec654390
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.determine_buy
+  . tasks.get_stock_info
+  . tasks.price_range
+  . tasks.sort_results
+
+[2017-01-23 16:51:57,527: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2017-01-23 16:51:57,533: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 16:51:58,558: INFO/MainProcess] mingle: all alone
+[2017-01-23 16:51:58,563: INFO/MainProcess] celery@mllxv-yu ready.
+...
+
+[2017-01-23 17:24:11,920: INFO/MainProcess] Received task: tasks.price_range[9f07a375-1bc4-47c9-9845-a6cdbb5ab7ce]  
+[2017-01-23 17:24:11,922: INFO/MainProcess] Received task: tasks.price_range[843b5530-6581-4a2a-8d95-52b744ec2fe9]  
+[2017-01-23 17:24:11,928: INFO/MainProcess] Received task: tasks.price_range[255dacc2-1a11-46b8-80df-5e3769e660a7]  
+[2017-01-23 17:24:12,330: INFO/PoolWorker-1] Task tasks.price_range[9f07a375-1bc4-47c9-9845-a6cdbb5ab7ce] succeeded in 0.41006319699954474s: {'period_mean': 801.898080615, 'period_low': 786.140015, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}
+[2017-01-23 17:24:12,556: INFO/PoolWorker-1] Task tasks.price_range[255dacc2-1a11-46b8-80df-5e3769e660a7] succeeded in 0.22441047399843228s: {'period_mean': 62.6038460769, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}
+[2017-01-23 17:24:33,085: INFO/PoolWorker-2] Task tasks.price_range[843b5530-6581-4a2a-8d95-52b744ec2fe9] succeeded in 21.161818658998527s: {'period_mean': 124.639231154, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.339996, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}
+[2017-01-23 17:24:33,085: INFO/MainProcess] Received task: tasks.sort_results[e9a5dea7-1a1e-4f80-94cc-91507c8f10bb]  
+[2017-01-23 17:24:33,087: INFO/PoolWorker-1] Task tasks.sort_results[e9a5dea7-1a1e-4f80-94cc-91507c8f10bb] succeeded in 0.0007061869982862845s: [{'period_mean': 62.60384607692307, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}, {'period_mean': 124.63923115384615, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.33999599999999, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}, {'period_mean': 801.8980806153847, 'period_low': 786.1400150000001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}]
+[2017-01-23 17:24:33,088: INFO/MainProcess] Received task: tasks.price_range[ac55eb4a-719b-4abd-899e-02e88b469539]  
+[2017-01-23 17:24:33,091: INFO/MainProcess] Received task: tasks.price_range[a002b240-faee-4078-9526-a3dd6a3a3eed]  
+[2017-01-23 17:24:33,092: INFO/MainProcess] Received task: tasks.price_range[27cf676d-d5ad-4cc4-a832-f934c143242d]  
+[2017-01-23 17:24:33,396: INFO/PoolWorker-1] Task tasks.price_range[ac55eb4a-719b-4abd-899e-02e88b469539] succeeded in 0.30715375500221853s: {'period_mean': 801.898080615, 'period_low': 786.140015, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}
+[2017-01-23 17:24:33,413: INFO/PoolWorker-2] Task tasks.price_range[a002b240-faee-4078-9526-a3dd6a3a3eed] succeeded in 0.3190052689969889s: {'period_mean': 124.639231154, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.339996, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}
+[2017-01-23 17:24:33,603: INFO/MainProcess] Received task: tasks.sort_results[438ab9e2-74c7-40a5-9ea8-eab7f03cf786]  
+[2017-01-23 17:24:33,605: INFO/PoolWorker-2] Task tasks.sort_results[438ab9e2-74c7-40a5-9ea8-eab7f03cf786] succeeded in 0.0010696719982661307s: [{'period_mean': 62.60384607692307, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}, {'period_mean': 124.63923115384615, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.33999599999999, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}, {'period_mean': 801.8980806153847, 'period_low': 786.1400150000001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}]
+[2017-01-23 17:24:33,606: INFO/MainProcess] Received task: tasks.price_range[c3528c4c-fe8f-410d-ae23-1026190456d9]  
+[2017-01-23 17:24:33,607: INFO/MainProcess] Received task: tasks.price_range[5dc4ec59-8d8a-43a1-aa38-4826171383c4]  
+[2017-01-23 17:24:33,606: INFO/PoolWorker-1] Task tasks.price_range[27cf676d-d5ad-4cc4-a832-f934c143242d] succeeded in 0.20942009900318226s: {'period_mean': 62.6038460769, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}
+[2017-01-23 17:24:33,610: INFO/MainProcess] Received task: tasks.price_range[13e6c8ca-8f48-4e6c-b49c-1094a2ed9471]  
+[2017-01-23 17:24:33,822: INFO/PoolWorker-1] Task tasks.price_range[5dc4ec59-8d8a-43a1-aa38-4826171383c4] succeeded in 0.2115212339995196s: {'period_mean': 124.639231154, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.339996, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}
+[2017-01-23 17:24:34,054: INFO/PoolWorker-1] Task tasks.price_range[13e6c8ca-8f48-4e6c-b49c-1094a2ed9471] succeeded in 0.23112070700153708s: {'period_mean': 62.6038460769, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}
+[2017-01-23 17:24:39,886: INFO/MainProcess] Received task: tasks.sort_results[bcef073b-64ef-44fe-956d-94262b112c4d]  
+[2017-01-23 17:24:39,886: INFO/PoolWorker-2] Task tasks.price_range[c3528c4c-fe8f-410d-ae23-1026190456d9] succeeded in 6.279443953000737s: {'period_mean': 801.898080615, 'period_low': 786.140015, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}
+[2017-01-23 17:24:39,887: INFO/PoolWorker-1] Task tasks.sort_results[bcef073b-64ef-44fe-956d-94262b112c4d] succeeded in 0.001018906998069724s: [{'period_mean': 62.60384607692307, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}, {'period_mean': 124.63923115384615, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.33999599999999, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}, {'period_mean': 801.8980806153847, 'period_low': 786.1400150000001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}]
+[2017-01-23 17:24:39,889: INFO/MainProcess] Received task: tasks.price_range[32f650a0-7d59-4792-a914-0b7f30b09fcb]  
+[2017-01-23 17:24:39,889: INFO/MainProcess] Received task: tasks.price_range[999543fd-ac1f-4278-8878-92cec14e3785]  
+[2017-01-23 17:24:39,892: INFO/MainProcess] Received task: tasks.price_range[02e40123-eb89-47c5-a285-699c74509566]  
+[2017-01-23 17:24:40,104: INFO/PoolWorker-2] Task tasks.price_range[999543fd-ac1f-4278-8878-92cec14e3785] succeeded in 0.2141534500005946s: {'period_mean': 124.639231154, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.339996, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}
+[2017-01-23 17:24:40,207: INFO/PoolWorker-1] Task tasks.price_range[32f650a0-7d59-4792-a914-0b7f30b09fcb] succeeded in 0.31650117399840383s: {'period_mean': 801.898080615, 'period_low': 786.140015, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}
+[2017-01-23 17:24:40,560: INFO/MainProcess] Received task: tasks.sort_results[d6c2239a-d7eb-4c2d-a050-8be3a2b3e011]  
+[2017-01-23 17:24:40,562: INFO/PoolWorker-1] Task tasks.sort_results[d6c2239a-d7eb-4c2d-a050-8be3a2b3e011] succeeded in 0.0010666769994713832s: [{'period_mean': 62.60384607692307, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}, {'period_mean': 124.63923115384615, 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 3.66, 'result': 'higher', 'period_high': 128.33999599999999, 'stock': 'FB', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 129.2}, {'period_mean': 801.8980806153847, 'period_low': 786.1400150000001, 'period_start': '2017-01-01T00:00:00', 'percent_change': 2.23, 'result': 'higher', 'period_high': 807.909973, 'stock': 'GOOG', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 819.8}]
+[2017-01-23 17:24:40,563: INFO/PoolWorker-2] Task tasks.price_range[02e40123-eb89-47c5-a285-699c74509566] succeeded in 0.4569005189987365s: {'period_mean': 62.6038460769, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}

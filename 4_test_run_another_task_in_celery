@@ -1,0 +1,86 @@
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ pwd
+/home/yann.yu/workspace/pythoncode/data_pipelines/celery_app
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ 
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+celery -A tasks worker --loglevel=INFO
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 14:08:58
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f4b49520198
+- ** ---------- .> transport:   amqp://celery_user:**@localhost:5672/celery_vhost
+- ** ---------- .> results:     rpc://
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.get_stock_info
+
+[2017-01-23 14:08:58,196: INFO/MainProcess] Connected to amqp://celery_user:**@127.0.0.1:5672/celery_vhost
+[2017-01-23 14:08:58,213: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 14:08:59,233: INFO/MainProcess] mingle: all alone
+[2017-01-23 14:08:59,242: INFO/MainProcess] celery@mllxv-yu ready.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In [7]: res = current_earnings.delay('IBM')
+
+In [8]: res
+Out[8]: <AsyncResult: e0dd43c7-ea53-45f8-a803-82c79bf96d60>
+
+In [9]: res.status
+Out[9]: 'SUCCESS'
+
+In [10]: res.info
+Out[10]: '{"Stock":{"0":"IBM"},"Current Year ESP":{"0":13.82}}'
+
+In [11]: res.get()
+Out[11]: '{"Stock":{"0":"IBM"},"Current Year ESP":{"0":13.82}}'
+
+In [12]: res.failed()
+Out[12]: False
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 14:08:58
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f4b49520198
+- ** ---------- .> transport:   amqp://celery_user:**@localhost:5672/celery_vhost
+- ** ---------- .> results:     rpc://
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.get_stock_info
+
+[2017-01-23 14:08:58,196: INFO/MainProcess] Connected to amqp://celery_user:**@127.0.0.1:5672/celery_vhost
+[2017-01-23 14:08:58,213: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 14:08:59,233: INFO/MainProcess] mingle: all alone
+[2017-01-23 14:08:59,242: INFO/MainProcess] celery@mllxv-yu ready.
+[2017-01-23 14:10:17,034: INFO/MainProcess] Received task: tasks.current_earnings[e0dd43c7-ea53-45f8-a803-82c79bf96d60]  
+[2017-01-23 14:10:17,562: INFO/PoolWorker-1] Task tasks.current_earnings[e0dd43c7-ea53-45f8-a803-82c79bf96d60] succeeded in 0.19384174500009976s: '{"Stock":{"0":"IBM"},"Current Year ESP":{"0":13.82}}'
+
+

@@ -1,0 +1,64 @@
+In [17]: my_stocks = ['GOOG', 'IBM', 'FB']
+
+In [18]: my_group = group(get_stock_info.s(stk, start, end) for stk in my_stocks)
+
+In [19]: my_group
+Out[19]: group([tasks.get_stock_info('GOOG', datetime.datetime(2017, 1, 1, 0, 0), datetime.datetime(2017, 1, 23, 15, 35, 30, 212161)), get_stock_info('IBM', datetime.datetime(2017, 1, 1, 0, 0), datetime.datetime(2017, 1, 23, 15, 35, 30, 212161)), get_stock_info('FB', datetime.datetime(2017, 1, 1, 0, 0), datetime.datetime(2017, 1, 23, 15, 35, 30, 212161))])
+
+In [20]: res = my_group()
+
+In [21]: res
+Out[21]: <GroupResult: dbb5ae68-1cca-4ba4-b90a-e2780c76cce0 [4b92fc06-4d2d-4aab-9dc7-5f564ae7e220, 50d3373b-654c-4ae3-b9e1-5e752b1ae514, 620123cf-0926-4a84-bad3-065e92e65994]>
+
+In [22]: res
+Out[22]: <GroupResult: dbb5ae68-1cca-4ba4-b90a-e2780c76cce0 [4b92fc06-4d2d-4aab-9dc7-5f564ae7e220, 50d3373b-654c-4ae3-b9e1-5e752b1ae514, 620123cf-0926-4a84-bad3-065e92e65994]>
+
+In [23]: res.get()
+Out[23]: 
+['{"Open min":{"GOOG":778.809998},"Open max":{"GOOG":807.859985},"Open mean":{"GOOG":800.5623074615},"Open median":{"GOOG":805.809998},"High min":{"GOOG":789.630005},"High max":{"GOOG":811.223999},"High mean":{"GOOG":804.5342359231},"High median":{"GOOG":807.390015},"Close min":{"GOOG":786.140015},"Close max":{"GOOG":807.909973},"Close mean":{"GOOG":801.8980806154},"Close median":{"GOOG":805.02002},"Adj Close min":{"GOOG":786.140015},"Adj Close max":{"GOOG":807.909973},"Adj Close mean":{"GOOG":801.8980806154},"Adj Close median":{"GOOG":805.02002},"Low min":{"GOOG":775.799988},"Low max":{"GOOG":806.690002},"Low mean":{"GOOG":796.5079955385},"Low median":{"GOOG":800.98999}}',
+ '{"Open min":{"IBM":166.050003},"Open max":{"IBM":169.470001},"Open mean":{"IBM":167.7584626923},"Open median":{"IBM":167.770004},"High min":{"IBM":167.449997},"High max":{"IBM":170.639999},"High mean":{"IBM":168.7730736154},"High median":{"IBM":168.479996},"Close min":{"IBM":165.520004},"Close max":{"IBM":170.550003},"Close mean":{"IBM":167.9184605385},"Close median":{"IBM":167.75},"Adj Close min":{"IBM":165.520004},"Adj Close max":{"IBM":170.550003},"Adj Close mean":{"IBM":167.9184605385},"Adj Close median":{"IBM":167.75},"Low min":{"IBM":165.339996},"Low max":{"IBM":167.619995},"Low mean":{"IBM":166.4430765385},"Low median":{"IBM":166.119995}}',
+ '{"Open min":{"FB":116.029999},"Open max":{"FB":128.410004},"Open mean":{"FB":124.0015388462},"Open median":{"FB":124.82},"High min":{"FB":117.839996},"High max":{"FB":129.270004},"High mean":{"FB":125.3061534615},"High median":{"FB":126.120003},"Close min":{"FB":116.860001},"Close max":{"FB":128.339996},"Close mean":{"FB":124.6392311538},"Close median":{"FB":126.089996},"Adj Close min":{"FB":116.860001},"Adj Close max":{"FB":128.339996},"Adj Close mean":{"FB":124.6392311538},"Adj Close median":{"FB":126.089996},"Low min":{"FB":115.510002},"Low max":{"FB":127.449997},"Low mean":{"FB":123.3207692308},"Low median":{"FB":124.279999}}']
+
+In [24]: 
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 15:40:42
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f0d09e982b0
+- ** ---------- .> transport:   amqp://celery_user:**@localhost:5672/celery_vhost
+- ** ---------- .> results:     rpc://
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.determine_buy
+  . tasks.get_stock_info
+  . tasks.price_range
+  . tasks.sort_results
+
+[2017-01-23 15:40:42,164: INFO/MainProcess] Connected to amqp://celery_user:**@127.0.0.1:5672/celery_vhost
+[2017-01-23 15:40:42,177: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 15:40:43,210: INFO/MainProcess] mingle: all alone
+[2017-01-23 15:40:43,230: INFO/MainProcess] celery@mllxv-yu ready.
+[2017-01-23 15:40:43,231: INFO/MainProcess] Received task: tasks.price_range[6bc8912a-ba39-445c-a1ab-1b7bef2156d9]  
+[2017-01-23 15:40:45,307: INFO/PoolWorker-1] Task tasks.price_range[6bc8912a-ba39-445c-a1ab-1b7bef2156d9] succeeded in 1.9750684169994202s: {'period_mean': 124.639231154, 'todays_price': 129.07, 'result': 'higher', 'stock': 'FB', 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'period_end': '2017-01-23T15:35:30.212161', 'period_high': 128.339996, 'percent_change': 3.55}
+[2017-01-23 15:40:45,309: INFO/MainProcess] Received task: tasks.determine_buy[a44bb435-4051-4f24-b53a-1c0c95788948]  
+[2017-01-23 15:40:47,234: INFO/PoolWorker-1] Task tasks.determine_buy[a44bb435-4051-4f24-b53a-1c0c95788948] succeeded in 0.00042067200047313236s: False
+[2017-01-23 15:57:57,157: INFO/MainProcess] Received task: tasks.get_stock_info[4b92fc06-4d2d-4aab-9dc7-5f564ae7e220]  
+[2017-01-23 15:57:57,158: INFO/MainProcess] Received task: tasks.get_stock_info[50d3373b-654c-4ae3-b9e1-5e752b1ae514]  
+[2017-01-23 15:57:57,163: INFO/MainProcess] Received task: tasks.get_stock_info[620123cf-0926-4a84-bad3-065e92e65994]  
+[2017-01-23 15:57:57,345: INFO/PoolWorker-1] Task tasks.get_stock_info[4b92fc06-4d2d-4aab-9dc7-5f564ae7e220] succeeded in 0.18601373600176885s: '{"Open min":{"GOOG":778.809998},"Open max":{"GOOG":807.859985},"Open mean":{"GOOG":800.5623074615},"Open median":{"GOOG":805.809998},"High min":{"GOOG":789.630005},"High max":{"GOOG":811.223999},"High mean":{"GOOG":804.5342359231},"High median":{"GOOG":807.390015},"Close min":{"GOOG":786.140015},"Close max":{"GOOG":807.909973},"Close mean":{"GOOG":801.8980806154},"Close median":{"GOOG":805.02002},"Adj Close min":{"GOOG":786.140015},"Adj Close max":{"GOOG":807.909973},"Adj Close mean":{"GOOG":801.8980806154},"Adj Close median":{"GOOG":805.02002},"Low min":{"GOOG":775.799988},"Low max":{"GOOG":806.690002},"Low mean":{"GOOG":796.5079955385},"Low median":{"GOOG":800.98999}}'
+[2017-01-23 15:57:57,367: INFO/PoolWorker-2] Task tasks.get_stock_info[50d3373b-654c-4ae3-b9e1-5e752b1ae514] succeeded in 0.20596096500230487s: '{"Open min":{"IBM":166.050003},"Open max":{"IBM":169.470001},"Open mean":{"IBM":167.7584626923},"Open median":{"IBM":167.770004},"High min":{"IBM":167.449997},"High max":{"IBM":170.639999},"High mean":{"IBM":168.7730736154},"High median":{"IBM":168.479996},"Close min":{"IBM":165.520004},"Close max":{"IBM":170.550003},"Close mean":{"IBM":167.9184605385},"Close median":{"IBM":167.75},"Adj Close min":{"IBM":165.520004},"Adj Close max":{"IBM":170.550003},"Adj Close mean":{"IBM":167.9184605385},"Adj Close median":{"IBM":167.75},"Low min":{"IBM":165.339996},"Low max":{"IBM":167.619995},"Low mean":{"IBM":166.4430765385},"Low median":{"IBM":166.119995}}'
+[2017-01-23 15:57:57,442: INFO/PoolWorker-1] Task tasks.get_stock_info[620123cf-0926-4a84-bad3-065e92e65994] succeeded in 0.09700691099715186s: '{"Open min":{"FB":116.029999},"Open max":{"FB":128.410004},"Open mean":{"FB":124.0015388462},"Open median":{"FB":124.82},"High min":{"FB":117.839996},"High max":{"FB":129.270004},"High mean":{"FB":125.3061534615},"High median":{"FB":126.120003},"Close min":{"FB":116.860001},"Close max":{"FB":128.339996},"Close mean":{"FB":124.6392311538},"Close median":{"FB":126.089996},"Adj Close min":{"FB":116.860001},"Adj Close max":{"FB":128.339996},"Adj Close mean":{"FB":124.6392311538},"Adj Close median":{"FB":126.089996},"Low min":{"FB":115.510002},"Low max":{"FB":127.449997},"Low mean":{"FB":123.3207692308},"Low median":{"FB":124.279999}}'
+

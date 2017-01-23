@@ -1,0 +1,36 @@
+pip install -U "celery[redis]"
+
++++++++++++++++++++++++++++++++++++++++++++
+
+configure to use redis as broker
+
++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 16:51:57
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f30ec654390
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.determine_buy
+  . tasks.get_stock_info
+  . tasks.price_range
+  . tasks.sort_results
+
+[2017-01-23 16:51:57,527: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2017-01-23 16:51:57,533: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 16:51:58,558: INFO/MainProcess] mingle: all alone
+[2017-01-23 16:51:58,563: INFO/MainProcess] celery@mllxv-yu ready.

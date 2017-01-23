@@ -1,0 +1,79 @@
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ ipython
+Python 3.5.2 (default, Nov 17 2016, 17:05:23) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.1.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: from tasks import get_stock_info, price_range, determine_buy, sort_results
+
+In [2]: from celery import chain, group, chord
+
+In [5]: from datetime import datetime
+
+In [6]: start = datetime(2017, 1, 1)
+
+In [7]: end = datetime.today()
+
+In [8]: my_chain = chain(price_range.s('FB', start, end), determine_buy.s())
+
+In [9]: my_chain
+Out[9]: tasks.price_range('FB', datetime.datetime(2017, 1, 1, 0, 0), datetime.datetime(2017, 1, 23, 15, 35, 30, 212161)) | determine_buy()
+
+In [10]: res = my_chain()
+
+In [11]: res
+Out[11]: <AsyncResult: a44bb435-4051-4f24-b53a-1c0c95788948>
+
+In [12]: res.status
+Out[12]: 'PENDING'
+
+In [14]: res.status
+Out[14]: 'PENDING'
+
+In [15]: res.get()
+Out[15]: False
+
+In [16]: res.status
+Out[16]: 'SUCCESS'
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 15:40:42
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f0d09e982b0
+- ** ---------- .> transport:   amqp://celery_user:**@localhost:5672/celery_vhost
+- ** ---------- .> results:     rpc://
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.determine_buy
+  . tasks.get_stock_info
+  . tasks.price_range
+  . tasks.sort_results
+
+[2017-01-23 15:40:42,164: INFO/MainProcess] Connected to amqp://celery_user:**@127.0.0.1:5672/celery_vhost
+[2017-01-23 15:40:42,177: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 15:40:43,210: INFO/MainProcess] mingle: all alone
+[2017-01-23 15:40:43,230: INFO/MainProcess] celery@mllxv-yu ready.
+[2017-01-23 15:40:43,231: INFO/MainProcess] Received task: tasks.price_range[6bc8912a-ba39-445c-a1ab-1b7bef2156d9]  
+[2017-01-23 15:40:45,307: INFO/PoolWorker-1] Task tasks.price_range[6bc8912a-ba39-445c-a1ab-1b7bef2156d9] succeeded in 1.9750684169994202s: {'period_mean': 124.639231154, 'todays_price': 129.07, 'result': 'higher', 'stock': 'FB', 'period_low': 116.860001, 'period_start': '2017-01-01T00:00:00', 'period_end': '2017-01-23T15:35:30.212161', 'period_high': 128.339996, 'percent_change': 3.55}
+[2017-01-23 15:40:45,309: INFO/MainProcess] Received task: tasks.determine_buy[a44bb435-4051-4f24-b53a-1c0c95788948]  
+[2017-01-23 15:40:47,234: INFO/PoolWorker-1] Task tasks.determine_buy[a44bb435-4051-4f24-b53a-1c0c95788948] succeeded in 0.00042067200047313236s: False
+
+

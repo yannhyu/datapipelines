@@ -1,0 +1,73 @@
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ ipython
+Python 3.5.2 (default, Nov 17 2016, 17:05:23) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.1.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: from tasks import get_stock_info, price_range, determine_buy, sort_results
+
+In [2]: from celery import chain, group, chord
+
+In [3]: from datetime import datetime
+
+In [4]: start = datetime(2017, 1, 1)
+
+In [5]: end = datetime.today()
+
+In [6]: my_chain = chain(price_range.s('MSFT', start, end), determine_buy.s())
+
+In [7]: my_chain
+Out[7]: tasks.price_range('MSFT', datetime.datetime(2017, 1, 1, 0, 0), datetime.datetime(2017, 1, 23, 16, 54, 34, 663464)) | determine_buy()
+
+In [8]: res = my_chain()
+
+In [9]: res
+Out[9]: <AsyncResult: 5b9b2992-2c7d-46bb-8a68-e0a7822f4967>
+
+In [10]: res.status
+Out[10]: 'SUCCESS'
+
+In [11]: res.get()
+Out[11]: False
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+(data_pipelines) yann.yu@mllxv-yu:celery_app$ celery -A tasks worker --loglevel=INFO
+ 
+ -------------- celery@mllxv-yu v4.0.2 (latentcall)
+---- **** ----- 
+--- * ***  * -- Linux-4.4.0-59-generic-x86_64-with-Ubuntu-16.04-xenial 2017-01-23 16:51:57
+-- * - **** --- 
+- ** ---------- [config]
+- ** ---------- .> app:         tasks:0x7f30ec654390
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 2 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.current_earnings
+  . tasks.determine_buy
+  . tasks.get_stock_info
+  . tasks.price_range
+  . tasks.sort_results
+
+[2017-01-23 16:51:57,527: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2017-01-23 16:51:57,533: INFO/MainProcess] mingle: searching for neighbors
+[2017-01-23 16:51:58,558: INFO/MainProcess] mingle: all alone
+[2017-01-23 16:51:58,563: INFO/MainProcess] celery@mllxv-yu ready.
+[2017-01-23 16:56:04,664: INFO/MainProcess] Received task: tasks.price_range[e479f722-47de-4878-aabc-72a56582d821]  
+[2017-01-23 16:56:04,985: INFO/MainProcess] Received task: tasks.determine_buy[5b9b2992-2c7d-46bb-8a68-e0a7822f4967]  
+[2017-01-23 16:56:04,986: INFO/PoolWorker-1] Task tasks.price_range[e479f722-47de-4878-aabc-72a56582d821] succeeded in 0.3206484609981999s: {'period_mean': 62.6038460769, 'period_low': 62.299999, 'period_start': '2017-01-01T00:00:00', 'percent_change': 0.63, 'result': 'higher', 'period_high': 63.189999, 'stock': 'MSFT', 'period_end': '2017-01-23T16:54:34.663464', 'todays_price': 63.0}
+[2017-01-23 16:56:04,987: INFO/PoolWorker-2] Task tasks.determine_buy[5b9b2992-2c7d-46bb-8a68-e0a7822f4967] succeeded in 0.0012220520002301782s: False
+
+
